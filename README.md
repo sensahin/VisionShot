@@ -50,7 +50,7 @@ VisionShot is a proof-of-concept (PoC) that illustrates how publicly accessible 
 
 1. **Clone or Download this Repository**
     ```bash
-    git clone https://github.com/yourusername/VisionShot.git
+    git clone https://github.com/sensahin/VisionShot.git
     cd VisionShot
     ```
 
