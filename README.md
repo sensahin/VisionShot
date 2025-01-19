@@ -1,6 +1,8 @@
 # **VisionShot**  
 _A Research Project Demonstrating the Ease of Public Screenshot Discovery and AI-based Image Analysis_
 
+[![Video Title](https://img.youtube.com/vi/xEsHRepfzks/0.jpg)](https://www.youtube.com/watch?v=xEsHRepfzks)
+
 ---
 
 ## **Overview**
