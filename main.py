@@ -20,6 +20,9 @@ MODEL_DOWNLOAD_URL_05B = (
     "9dddae84d54db4ac56fe37817aeaeb502ed083e2/moondream-0_5b-int8.mf.gz?download=true"
 )
 
+# Text file to record successful images and AI analysis
+FOUND_IMAGES_LOG = "found_images.txt"
+
 # --------------------------------------------------------------------------------
 # HELPERS
 # --------------------------------------------------------------------------------
@@ -94,11 +97,11 @@ def analyze_image_with_moondream(image_path, model):
         # Ask question
         answer = model.query(encoded_image, "What's in this image?")["answer"]
         
-        print(f"Caption: {caption}")
-        print(f"Answer:  {answer}")
+        return caption, answer
         
     except Exception as e:
         print(f"Failed to analyze image with moondream. Error: {e}")
+        return None, None
 
 def download_and_unzip_model(url, output_path):
     """
@@ -170,6 +173,7 @@ def main(num_checks=10000):
     Attempt `num_checks` random prnt.sc URLs. For each valid image found:
       - Download it to a 'downloads' folder
       - Analyze it with moondream
+      - Record findings in a text file
     """
 
     # 1. Get the path to the model or attempt to download
@@ -187,28 +191,43 @@ def main(num_checks=10000):
         os.makedirs("downloads")
     
     successful_downloads = 0
-    
-    for _ in range(num_checks):
-        code = generate_random_code(11)
-        print(f"Trying code: {code}")
+
+    # ------------------------------------------------------------------------
+    # OPEN THE LOG FILE IN APPEND MODE (OR WRITE MODE, IF YOU PREFER TO OVERWRITE)
+    # ------------------------------------------------------------------------
+    with open(FOUND_IMAGES_LOG, "a", encoding="utf-8") as log_file:
+        # If you prefer to overwrite the file on each run, use "w" and write a header:
+        # log_file.write("code\timage_url\tcaption\tanswer\n")
         
-        image_url = get_image_url_from_prntsc(code)
-        if image_url:
-            print(f"  Found image: {image_url}")
-            filename = os.path.join("downloads", f"{code}.jpg")
+        for _ in range(num_checks):
+            code = generate_random_code(11)
+            print(f"Trying code: {code}")
             
-            try:
-                download_image(image_url, filename)
-                successful_downloads += 1
-                print(f"  -> Downloaded as {filename}")
+            image_url = get_image_url_from_prntsc(code)
+            if image_url:
+                print(f"  Found image: {image_url}")
+                filename = os.path.join("downloads", f"{code}.jpg")
                 
-                # Analyze the downloaded image
-                analyze_image_with_moondream(filename, model)
-                print("")
-            except Exception as e:
-                print(f"  -> Failed to download or analyze. Error: {e}\n")
-        else:
-            print("  -> No valid image found.\n")
+                try:
+                    download_image(image_url, filename)
+                    successful_downloads += 1
+                    print(f"  -> Downloaded as {filename}")
+                    
+                    # Analyze the downloaded image
+                    caption, answer = analyze_image_with_moondream(filename, model)
+                    
+                    # Write the result to the log file if analysis succeeded
+                    if caption and answer:
+                        log_file.write(f"{code}\t{image_url}\t{caption}\t{answer}\n")
+                        log_file.flush()  # Ensure data is written to disk
+                    
+                    print(f"Caption: {caption}")
+                    print(f"Answer:  {answer}\n")
+                    
+                except Exception as e:
+                    print(f"  -> Failed to download or analyze. Error: {e}\n")
+            else:
+                print("  -> No valid image found.\n")
     
     print(f"Completed {num_checks} checks. Downloaded {successful_downloads} images.")
 
