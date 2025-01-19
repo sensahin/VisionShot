@@ -2,8 +2,7 @@
 _A Research Project Demonstrating the Ease of Public Screenshot Discovery and AI-based Image Analysis_
 
 
-[![Demo](https://img.youtube.com/vi/xEsHRepfzks/0.jpg)](https://raw.githubusercontent.com/sensahin/Media/main/assets/0120.mov)
-
+[![Demo](https://img.youtube.com/vi/xEsHRepfzks/0.jpg)](https://youtu.be/xEsHRepfzks)
 
 ---
 
